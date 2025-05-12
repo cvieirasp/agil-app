@@ -44,8 +44,8 @@ export default function AgilDefinitionsPage() {
 
     try {
       const environment = process.env.NEXT_PUBLIC_NODE_ENV === "production" ? "webhook" : "webhook-test"
-      const webhookPath = process.env.NEXT_PUBLIC_N8N_WEBHOOK_PATH
-      const webhookKey = process.env.NEXT_PUBLIC_N8N_WEBHOOK_KEY
+      const webhookPath = process.env.N8N_WEBHOOK_PATH
+      const webhookKey = process.env.N8N_WEBHOOK_KEY
       
       if (!webhookKey) {
         throw new Error("Webhook key is not configured")
