@@ -1,6 +1,5 @@
 import { supabaseServer } from "@/lib/supabase-server"
 import { errorHandler, handleSupabaseError } from "@/middleware/error-handler"
-import type { Story, RealtimePayload } from "@/types/supabase"
 
 export async function GET(request: Request) {
   try {
