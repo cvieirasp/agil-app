@@ -12,19 +12,18 @@ export async function POST(request: Request) {
       )
     }
 
-    const environment = process.env.NEXT_PUBLIC_NODE_ENV === "production" ? "webhook" : "webhook-test"
-    const webhookPath = process.env.N8N_WEBHOOK_PATH
+    const webhookURL = process.env.N8N_WEBHOOK_URL
     const webhookKey = process.env.N8N_WEBHOOK_KEY
     
-    if (!webhookKey) {
+    if (!webhookKey || !webhookURL) {
       return NextResponse.json(
-        { error: "Webhook key is not configured" },
+        { error: "Webhook key or URL is not configured" },
         { status: 500 }
       )
     }
 
     const response = await fetch(
-      `https://cvieirasp.app.n8n.cloud/${environment}/${webhookPath}`,
+      webhookURL,
       {
         method: "POST",
         headers: {
