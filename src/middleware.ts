@@ -4,7 +4,9 @@ const isProtectedRoute = createRouteMatcher([
   "/",
   "/home",
   "/agil-definitions",
-  "/agil-definitions/(.*)"
+  "/agil-definitions/(.*)",
+  "/stories",
+  "/stories/(.*)"
 ])
 
 const isAuthRoute = createRouteMatcher([
