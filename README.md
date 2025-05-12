@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Agil App
+
+A modern web application designed to streamline and automate the agile development process by managing and generating essential agile artifacts such as Definition of Ready (DoR), Definition of Done (DoD), and Acceptance Criteria.
+
+## Features
+
+- 🔐 **Secure Authentication**: Built with Clerk for robust user authentication and authorization
+- 📝 **Agile Definitions Management**: 
+  - Generate Definition of Ready (DoR)
+  - Generate Definition of Done (DoD)
+  - Create Acceptance Criteria
+- 🔄 **Real-time Updates**: Automatic synchronization with Supabase for instant data updates
+- 📊 **Story Management**: Track and manage user stories with unique story codes
+- 🤖 **AI-Powered Generation**: Automated generation of agile artifacts based on application scope
+- 🎨 **Modern UI**: Built with Tailwind CSS and shadcn/ui components
+- 📱 **Responsive Design**: Works seamlessly across all devices
+
+## Tech Stack
+
+- **Framework**: [Next.js 14](https://nextjs.org/) with App Router
+- **Authentication**: [Clerk](https://clerk.com/)
+- **Database**: [Supabase](https://supabase.com/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [shadcn/ui](https://ui.shadcn.com/)
+- **Form Handling**: [React Hook Form](https://react-hook-form.com/) with [Zod](https://zod.dev/)
+- **Notifications**: [Sonner](https://sonner.emilkowal.ski/)
+- **Automation**: [n8n](https://n8n.io/)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18.17 or later
+- npm or yarn
+- Supabase account
+- Clerk account
+- n8n account
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```env
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# n8n Webhook
+NEXT_PUBLIC_N8N_WEBHOOK_PATH=your_webhook_path
+NEXT_PUBLIC_N8N_WEBHOOK_KEY=your_webhook_key
+NEXT_PUBLIC_NODE_ENV=development
+```
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/agil-app.git
+cd agil-app
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Run the development server:
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+agil-app/
+├── src/
+│   ├── app/
+│   │   ├── (authenticated)/    # Protected routes
+│   │   ├── (auth)/            # Authentication routes
+│   │   └── api/               # API routes
+│   ├── components/
+│   │   ├── ui/               # UI components
+│   │   └── custom/           # Custom components
+│   └── lib/                  # Utility functions
+├── public/                   # Static assets
+└── ...
+```
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Deploy on Vercel
+## Support
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For support, email support@agil-app.com or join our Slack channel.
