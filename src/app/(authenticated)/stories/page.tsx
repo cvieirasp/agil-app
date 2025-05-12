@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { createClient } from "@supabase/supabase-js"
+import { toast } from "sonner"
 import {
   Table,
   TableBody,
@@ -11,16 +11,10 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Loading } from "@/components/custom/loading"
-import { toast } from "sonner"
-
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
-)
 
 interface Story {
   id: string
+  story_code: string
   application_scope: string
   definition_of_ready: string
   definition_of_done: string
@@ -28,24 +22,23 @@ interface Story {
   created_at: string
 }
 
-export default function StoriesListPage() {
+export default function StoriesPage() {
   const [stories, setStories] = useState<Story[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Function to fetch stories
   const fetchStories = async () => {
     try {
-      const { data, error } = await supabase
-        .from('story_info')
-        .select()
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      setStories(data || [])
+      const response = await fetch('/api/stories')
+      if (!response.ok) throw new Error('Failed to fetch stories')
+      
+      const data = await response.json()
+      setStories(data)
+      setError(null)
     } catch (err) {
-      setError('Failed to fetch stories')
       console.error('Error fetching stories:', err)
+      setError('Failed to load stories')
+      toast.error('Failed to load stories')
     } finally {
       setIsLoading(false)
     }
@@ -55,47 +48,54 @@ export default function StoriesListPage() {
     // Initial fetch
     fetchStories()
 
-    // Set up real-time subscription
-    const channel = supabase
-      .channel('story_info_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // Listen for all events (INSERT, UPDATE, DELETE)
-          schema: 'public',
-          table: 'story_info'
-        },
-        (payload) => {
-          console.log('Change received!', payload)
-          
-          // Refresh the stories list
-          fetchStories()
+    // Set up SSE connection
+    const eventSource = new EventSource('/api/stories/events')
 
-          // Show toast notification based on the event type
-          switch (payload.eventType) {
-            case 'INSERT':
-              toast.success('New story added')
-              break
-            case 'UPDATE':
-              toast.info('Story updated')
-              break
-            case 'DELETE':
-              toast.warning('Story removed')
-              break
-          }
+    eventSource.onmessage = (event) => {
+      if (event.data === 'connected') {
+        console.log('SSE connected')
+        return
+      }
+
+      try {
+        const payload = JSON.parse(event.data)
+        console.log('Received update:', payload)
+
+        // Refresh stories when we receive an update
+        fetchStories()
+
+        // Show toast notification based on event type
+        switch (payload.eventType) {
+          case 'INSERT':
+            toast.success('New story added')
+            break
+          case 'UPDATE':
+            toast.success('Story updated')
+            break
+          case 'DELETE':
+            toast.success('Story removed')
+            break
         }
-      )
-      .subscribe()
+      } catch (err) {
+        console.error('Error processing SSE message:', err)
+      }
+    }
 
-    // Cleanup subscription on component unmount
+    eventSource.onerror = (err) => {
+      console.error('SSE error:', err)
+      eventSource.close()
+      toast.error('Lost connection to server')
+    }
+
+    // Cleanup on unmount
     return () => {
-      supabase.removeChannel(channel)
+      eventSource.close()
     }
   }, [])
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8">
+      <div className="flex items-center justify-center min-h-[400px]">
         <Loading />
       </div>
     )
@@ -103,8 +103,8 @@ export default function StoriesListPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="text-center text-red-500">{error}</div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-destructive">{error}</p>
       </div>
     )
   }
@@ -112,34 +112,36 @@ export default function StoriesListPage() {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">User Stories</h1>
+        <h1 className="text-3xl font-bold">Stories List</h1>
         <p className="mt-2 text-muted-foreground">
-          A comprehensive list of all user stories and their agile definitions
+          View and manage your user stories, including their definitions and acceptance criteria.
         </p>
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Application Scope</TableHead>
-              <TableHead>Definition of Ready</TableHead>
-              <TableHead>Definition of Done</TableHead>
-              <TableHead>Acceptance Criteria</TableHead>
-              <TableHead>Created</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {stories.length === 0 ? (
+      {stories.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-muted-foreground">No stories found.</p>
+        </div>
+      ) : (
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
-                  No stories found
-                </TableCell>
+                <TableHead>Story Code</TableHead>
+                <TableHead>Application Scope</TableHead>
+                <TableHead>Definition of Ready</TableHead>
+                <TableHead>Definition of Done</TableHead>
+                <TableHead>Acceptance Criteria</TableHead>
+                <TableHead>Created Date</TableHead>
               </TableRow>
-            ) : (
-              stories.map((story) => (
+            </TableHeader>
+            <TableBody>
+              {stories.map((story) => (
                 <TableRow key={story.id}>
-                  <TableCell className="font-medium max-w-[200px] break-words whitespace-normal">
+                  <TableCell className="whitespace-nowrap">
+                    {story.story_code}
+                  </TableCell>
+                  <TableCell className="max-w-[200px] break-words whitespace-normal">
                     {story.application_scope}
                   </TableCell>
                   <TableCell className="max-w-[200px] break-words whitespace-normal">
@@ -155,11 +157,11 @@ export default function StoriesListPage() {
                     {new Date(story.created_at).toLocaleDateString()}
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   )
 } 

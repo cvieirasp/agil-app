@@ -43,33 +43,17 @@ export default function AgilDefinitionsPage() {
     setIsLoading(true)
 
     try {
-      const environment = process.env.NEXT_PUBLIC_NODE_ENV === "production" ? "webhook" : "webhook-test"
-      const webhookPath = process.env.N8N_WEBHOOK_PATH
-      const webhookKey = process.env.N8N_WEBHOOK_KEY
-      
-      if (!webhookKey) {
-        throw new Error("Webhook key is not configured")
-      }
-
-      console.log(environment, webhookKey)
-
-      const response = await fetch(
-        `https://cvieirasp.app.n8n.cloud/${environment}/${webhookPath}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "api-key": webhookKey,
-          },
-          body: JSON.stringify({
-            story_code: data.storyCode,
-            application_scope: data.scope
-          }),
-        }
-      )
+      const response = await fetch('/api/scope', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
 
       if (!response.ok) {
-        throw new Error("Failed to submit scope")
+        const error = await response.json()
+        throw new Error(error.error || "Failed to submit scope")
       }
 
       toast.success("Your scope has been submitted successfully! We'll process it and update the definitions soon.")
@@ -77,7 +61,7 @@ export default function AgilDefinitionsPage() {
       router.push('/stories')
     } catch (error) {
       console.error("Error submitting scope:", error)
-      toast.error("Failed to submit scope. Please try again later.")
+      toast.error(error instanceof Error ? error.message : "Failed to submit scope. Please try again later.")
     } finally {
       setIsLoading(false)
     }
