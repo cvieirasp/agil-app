@@ -1,7 +1,6 @@
-import { SupabaseClient } from '@supabase/supabase-js';
 import { Story } from '@/core/domain/entities/story.entity';
 import { StoryRepository } from '@/core/domain/interfaces/story.repository';
-import { DatabaseClient, DatabaseService } from '@/core/domain/interfaces/database.service';
+import { DatabaseClient } from '@/core/domain/interfaces/database.service';
 
 export class SupabaseStoryRepository implements StoryRepository {
 

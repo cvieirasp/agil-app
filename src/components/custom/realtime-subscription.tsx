@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { useAuth } from '@clerk/nextjs'
 import { toast } from 'sonner'
@@ -16,8 +16,6 @@ export function RealtimeSubscription({
   tableName
 }: RealtimeSubscriptionProps) {
   const session = useAuth()
-  const [isSubscribed, setIsSubscribed] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let supabase: ReturnType<typeof createClient>
@@ -38,9 +36,6 @@ export function RealtimeSubscription({
               },
               heartbeatIntervalMs: 10000,
               reconnectAfterMs: () => 10000,
-              logger: (level: string, message: string) => {
-                //console.log(`[Realtime] ${level}: ${message}`)
-              }
             }
           }
         )
@@ -58,9 +53,7 @@ export function RealtimeSubscription({
               schema: 'public',
               table: tableName
             },
-            (payload) => {
-              //console.log('Change received:', payload)
-              
+            (payload) => {            
               // Trigger callback to refresh data
               onDataChange()
               
@@ -80,9 +73,7 @@ export function RealtimeSubscription({
           )
           .subscribe((status) => {
             if (status === 'SUBSCRIBED') {
-              //console.log('Successfully subscribed to real-time updates')
-              setIsSubscribed(true)
-              setError(null)
+              console.log('Successfully subscribed to real-time updates')
             }
           })
         
@@ -94,8 +85,6 @@ export function RealtimeSubscription({
         }
       } catch (err) {
         console.error('Error setting up real-time subscription:', err)
-        setError(err instanceof Error ? err.message : 'Unknown error')
-        setIsSubscribed(false)
       }
     }
 
