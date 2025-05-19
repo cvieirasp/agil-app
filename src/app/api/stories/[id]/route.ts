@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { DeleteStoryUseCase } from '@/core/use-cases/stories/delete-story.use-case';
 import { ClerkAuthService } from '@/infrastructure/auth/clerk/clerk-auth.service';
 import { SupabaseService } from '@/infrastructure/database/supabase.service';
 import { SupabaseStoryRepository } from '@/infrastructure/repositories/supabase-story.repository';
 
 export async function DELETE(
-  _request: Request,
-  context: { params: { id: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authService = new ClerkAuthService();
@@ -21,7 +21,8 @@ export async function DELETE(
     const deleteStoryUseCase = new DeleteStoryUseCase(storyRepository, authService);
 
     // Execute use case to delete the story
-    await deleteStoryUseCase.execute(context.params.id);
+    const { id } = await params;
+    await deleteStoryUseCase.execute(id);
     
     return NextResponse.json(
       { message: 'Story deleted successfully' },
