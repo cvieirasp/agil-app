@@ -12,7 +12,7 @@ export default function UnauthorizedPage() {
           <ExclamationCircleIcon className="h-12 w-12 text-red-500" />
         </div>
         <p className="mt-2 text-muted-foreground text-center">
-          You don't have the required permissions to access this page.
+          You don not have the required permissions to access this page.
         </p>
       </Card>
     </div>
