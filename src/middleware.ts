@@ -1,8 +1,16 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
+import { NextResponse } from "next/server"
 
 const isProtectedRoute = createRouteMatcher([
   "/",
   "/home",
+  "/agil-definitions",
+  "/agil-definitions/(.*)",
+  "/stories",
+  "/stories/(.*)"
+])
+
+const isAdminRoute = createRouteMatcher([
   "/agil-definitions",
   "/agil-definitions/(.*)",
   "/stories",
@@ -16,7 +24,10 @@ const isAuthRoute = createRouteMatcher([
 
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
-    await auth.protect()
+    const protectedRoute = await auth.protect()
+    if (isAdminRoute(req) && protectedRoute.sessionClaims.internal_role !== "admin") {
+      return NextResponse.redirect(new URL("/unauthorized", req.url))
+    }
   }
   if (isAuthRoute(req)) {
     return
