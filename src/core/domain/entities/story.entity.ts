@@ -7,4 +7,5 @@ export interface Story {
   acceptance_criteria: string;
   created_at: string;
   clerk_user_id: string;
+  technical_doc: string;
 } 

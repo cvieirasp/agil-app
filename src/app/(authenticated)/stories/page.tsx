@@ -26,6 +26,7 @@ interface Story {
   definition_of_ready: string
   definition_of_done: string
   acceptance_criteria: string
+  technical_doc: string
   created_at: string
 }
 
@@ -236,6 +237,7 @@ export default function StoriesPage() {
                   <TableHead className="font-semibold">Definition of Ready</TableHead>
                   <TableHead className="font-semibold">Definition of Done</TableHead>
                   <TableHead className="font-semibold">Acceptance Criteria</TableHead>
+                  <TableHead className="font-semibold">Technical Doc</TableHead>
                   <TableHead className="font-semibold">Created Date</TableHead>
                   <TableHead className="text-right font-semibold">Actions</TableHead>
                 </TableRow>
@@ -255,9 +257,12 @@ export default function StoriesPage() {
                     <TableCell className="break-words whitespace-normal">
                       <ReactMarkdown>{story.definition_of_done}</ReactMarkdown>
                     </TableCell>
-                    <TableCell className="break-words whitespace-normal">
-                      <ReactMarkdown>{story.acceptance_criteria}</ReactMarkdown>
-                    </TableCell>
+                      <TableCell className="break-words whitespace-normal">
+                        <ReactMarkdown>{story.acceptance_criteria}</ReactMarkdown>
+                      </TableCell>
+                      <TableCell className="break-words whitespace-normal">
+                        <ReactMarkdown>{story.technical_doc}</ReactMarkdown>
+                      </TableCell>
                     <TableCell className="whitespace-nowrap w-max-[200px]">
                       {new Date(story.created_at).toLocaleString()}
                     </TableCell>
